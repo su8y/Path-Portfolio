@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Map History Integration</title>
+  <link href="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css" rel="stylesheet"/>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+    }
+    .map-container {
+      width: 70vw;
+      height: 100vh;
+    }
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+    .history-items {
+      width: 30vw;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    .map-history {
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      padding: 5px;
+    }
+  </style>
+</head>
+<body>
+<div class="map-container">
+  <div class="map" id="map"></div>
+</div>
+<div class="history-items">
+  <div class="map-history" id="history-item-1" data-date="2023-10-26">A - Seongnam</div>
+  <div class="map-history" id="history-item-2" data-date="2023-10-27">B - Gwanggyo</div>
+  <div class="map-history" id="history-item-3" data-date="2023-10-28">C - Seoul</div>
+</div>
+
+<script src="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const mapDiv = document.querySelector('.map');
+    const historyItems = document.querySelectorAll('.map-history');
+
+    if (mapDiv) {
+      maplibregl.accessToken = 'YOUR_MAPLIBRE_API_KEY';
+
+      const map = new maplibregl.Map({
+        container: 'map',
+        style: 'https://demotiles.maplibre.org/style.json',
+        center: [127.0017, 37.5665],
+        zoom: 10
+      });
+
+      map.on('load', function () {
+        // --- Core logic to visualize a route with history points ---
+        function visualizeRoute(historyItems) {
+          // Clear existing layers and markers for a fresh visualization
+          if (map.getLayer('history-route-line')) {
+            map.removeLayer('history-route-line');
+          }
+          if (map.getSource('history-route')) {
+            map.removeSource('history-route');
+          }
+          document.querySelectorAll('.maplibregl-marker').forEach(marker => marker.remove());
+
+          // The pre-defined curved route
+          const curvedRouteCoordinates =[
+            [127.1265, 37.4139],  // 성남 출발
+            [127.1350, 37.4200],
+            [127.1500, 37.4050],
+            [127.1800, 37.4100],
+            [127.2050, 37.4000],
+            [127.2300, 37.4150],
+            [127.2450, 37.4200],
+            [127.2610, 37.4290]   // 광주 도착
+          ]
+
+          const bounds = new maplibregl.LngLatBounds();
+
+          // Add markers for each history item using coordinates from the curved route
+          historyItems.forEach((item, index) => {
+            // Use a simple index to pick points from the pre-defined route
+            const pointIndex = Math.floor(index / (historyItems.length - 1) * (curvedRouteCoordinates.length - 1));
+            const coordinates = curvedRouteCoordinates[pointIndex];
+
+            const date = item.dataset.date || 'Unknown Date';
+            const textContent = item.textContent;
+
+            bounds.extend(coordinates);
+
+            // Add a marker for each history item
+            new maplibregl.Marker()
+            .setLngLat(coordinates)
+            .setPopup(new maplibregl.Popup({ offset: 25 }).setText(`${textContent} (${date})`))
+            .addTo(map);
+          });
+
+          // --- Add the "History" Route Line ---
+          map.addSource('history-route', {
+            type: 'geojson',
+            data: {
+              type: 'Feature',
+              geometry: {
+                type: 'LineString',
+                coordinates: curvedRouteCoordinates // Use the pre-defined route
+              }
+            }
+          });
+
+          map.addLayer({
+            id: 'history-route-line',
+            type: 'line',
+            source: 'history-route',
+            layout: {
+              'line-join': 'round',
+              'line-cap': 'round'
+            },
+            paint: {
+              'line-color': '#3887be',
+              'line-width': 5,
+              'line-opacity': 0.7
+            }
+          });
+
+          // Fit the map to the bounds of all history locations
+          map.fitBounds(bounds, { padding: 50 });
+        }
+
+        visualizeRoute(historyItems);
+      });
+    } else {
+      console.error('Div with class "map" not found.');
+    }
+  });
+</script>
+</body>
+</html>
