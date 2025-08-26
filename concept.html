@@ -185,41 +185,103 @@
       if (map.getSource('history-route')) map.removeSource('history-route');
       document.querySelectorAll('.maplibregl-marker').forEach(marker => marker.remove());
 
+      // const curvedRouteCoordinates = [
+      //   [127.1265, 37.4139],
+      //   [127.1350, 37.4200],
+      //   [127.1500, 37.4050],
+      //   [127.1800, 37.4100],
+      //   [127.2050, 37.4000],
+      //   [127.2300, 37.4150],
+      //   [127.2450, 37.4200],
+      //   [127.2610, 37.4290]
+      // ];
       const curvedRouteCoordinates = [
-        [127.1265, 37.4139],
-        [127.1350, 37.4200],
-        [127.1500, 37.4050],
-        [127.1800, 37.4100],
-        [127.2050, 37.4000],
-        [127.2300, 37.4150],
-        [127.2450, 37.4200],
-        [127.2610, 37.4290]
+        [127.0, 37.5],     // 한국 (서울 근처)
+        [140.0, 45.0],     // 일본 북부 상공
+        [165.0, 50.0],     // 북태평양 상공 (점차 북쪽으로 이동)
+        [-130.0, 42.0],    // 미국 오레곤 상공
+        [-122.4, 37.7],    // 샌프란시스코 상공
+        [-118.2, 34.0]     // 로스앤젤레스
       ];
 
-      for(let i=0;i<items.length;i++){
-        const curvedRatio = (i + 1)/ (items.length  + 1);
+      // 1. LineString의 Bounding Box 계산
+      const bounds = new maplibregl.LngLatBounds();
+      for (const coord of curvedRouteCoordinates) {
+        bounds.extend(coord);
+      }
 
-        console.log(curvedRatio)
+      // 2. 바운딩 박스를 정사각형으로 재계산
+      const center = bounds.getCenter();
+      const northeast = bounds.getNorthEast();
+      const southwest = bounds.getSouthWest();
 
-        const point30 =  getPointAtRatio(curvedRouteCoordinates, curvedRatio);
-        console.log(point30)
+      const latDelta = northeast.lat - southwest.lat;
+
+      // 경도 차이를 올바르게 계산
+      let lngDelta = northeast.lng - southwest.lng;
+      if (lngDelta < 0) { // 날짜 변경선을 지나는 경우
+        lngDelta += 360;
+      }
+
+      const maxDelta = Math.max(latDelta, lngDelta);
+
+      // 새로운 정사각형 바운딩 박스 생성
+
+
+      // 3. 패딩을 적용한 후의 줌 레벨을 계산하여 얻기
+      const padding = 20;
+      const zoomLevel = map.cameraForBounds(bounds, { padding: padding }).zoom;
+
+      // 4. 계산된 줌 레벨과 중심으로 맵 이동 및 줌 레벨 제한
+      map.flyTo({
+        center: bounds.getCenter(),
+        zoom: zoomLevel,
+        speed: 0.9
+      });
+
+      map.once('moveend', () => {
+        const currentBounds = map.getBounds();
+        map.setMinZoom(zoomLevel);
+        map.setMaxBounds(currentBounds);
+      });
+
+
+
+      for (let i = 0; i < items.length; i++) {
+        const curvedRatio = (i + 1) / (items.length + 1);
+        const point30 = getPointAtRatio(curvedRouteCoordinates, curvedRatio);
         new maplibregl.Marker({ color: 'red' })
         .setLngLat(point30)
-        .setPopup(new maplibregl.Popup().setText(`${curvedRatio}% 지점`))
+        .setPopup(new maplibregl.Popup().setText(`${Math.round(curvedRatio * 100)}% 지점`))
         .addTo(map);
 
       }
 
-
-      map.addSource('history-route', { type: 'geojson', data: { type: 'Feature', geometry: { type: 'LineString', coordinates: curvedRouteCoordinates }}});
-      map.addLayer({
-        id: 'history-route-line', type: 'line', source: 'history-route',
-        layout: { 'line-join': 'round', 'line-cap': 'round' },
-        paint: { 'line-color': '#3887be', 'line-width': 5, 'line-opacity': 0.7 }
+      map.addSource('history-route', {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: curvedRouteCoordinates
+          }
+        }
       });
-
+      map.addLayer({
+        id: 'history-route-line',
+        type: 'line',
+        source: 'history-route',
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        paint: {
+          'line-color': '#3887be',
+          'line-width': 5,
+          'line-opacity': 0.7
+        }
+      });
     }
-
     toggleMapBtn.addEventListener('click', function() {
       if (mapContainer.style.display === 'none' || mapContainer.style.display === '') {
         mapContainer.style.display = 'block';

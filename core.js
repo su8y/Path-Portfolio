@@ -1,4 +1,4 @@
-class Vector2D {
+export class Vector2D {
   constructor(x, y) {
     this.x = x;
     this.y = y;
@@ -29,7 +29,7 @@ class Vector2D {
   }
 }
 
-function getTotalLengthVector(lineString) {
+export function getTotalLengthVector(lineString) {
   let totalLength = 0;
   for (let i = 0; i < lineString.length - 1; i++) {
     const v1 = new Vector2D(lineString[i][0], lineString[i][1]);
@@ -40,7 +40,7 @@ function getTotalLengthVector(lineString) {
   return totalLength;
 }
 
-function getPointAtRatio(lineString, ratio) {
+export function getPointAtRatio(lineString, ratio) {
   console.log(lineString, ratio);
   if (ratio <= 0) return lineString[0];
   if (ratio >= 1) return lineString[lineString.length - 1];
