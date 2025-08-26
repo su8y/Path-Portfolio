@@ -3,144 +3,242 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Map History Integration</title>
+  <title>Map History</title>
   <link href="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css" rel="stylesheet"/>
   <style>
+    :root {
+      --primary-color: #3887be;
+      --secondary-color: #f0f4f8;
+      --text-color: #333;
+      --border-color: #e0e0e0;
+      --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --transition-speed: 0.3s ease-in-out;
+    }
+
     body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       margin: 0;
-      padding: 0;
+      padding: 20px;
+      background-color: var(--secondary-color);
+      color: var(--text-color);
       display: flex;
+      flex-direction: column;
+      align-items: center;
     }
+
+    #toggleMapBtn {
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+      background-color: var(--primary-color);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: var(--box-shadow);
+      transition: background-color var(--transition-speed);
+      margin-bottom: 20px;
+    }
+
+    #toggleMapBtn:hover {
+      background-color: #2b6a9a;
+    }
+
+    .content-container {
+      display: flex;
+      width: 100%;
+      max-width: 1200px;
+      gap: 20px;
+    }
+
     .map-container {
-      width: 70vw;
-      height: 100vh;
+      flex: 2;
+      height: 600px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--box-shadow);
+      transition: opacity var(--transition-speed);
+      display: none;
     }
-    #map {
+
+    .map {
       width: 100%;
       height: 100%;
     }
+
     .history-items {
-      width: 30vw;
-      height: 100vh;
-      overflow-y: auto;
-      padding: 10px;
-      box-sizing: border-box;
+      flex: 1;
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: var(--box-shadow);
     }
+
     .map-history {
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
-      padding: 5px;
+      padding: 15px;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: background-color var(--transition-speed);
+    }
+
+    .map-history:last-child {
+      border-bottom: none;
+    }
+
+    .map-history:hover {
+      background-color: var(--secondary-color);
+    }
+
+    .map-history h4 {
+      margin: 0;
+      font-size: 1.1rem;
+    }
+    .map-history span {
+      font-size: 0.9rem;
+      color: #777;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+        padding: 10px;
+      }
+      .content-container {
+        flex-direction: column;
+        gap: 10px;
+      }
+      .map-container {
+        height: 400px;
+      }
     }
   </style>
 </head>
 <body>
-<div class="map-container">
-  <div class="map" id="map"></div>
-</div>
-<div class="history-items">
-  <div class="map-history" id="history-item-1" data-date="2023-10-26">A - Seongnam</div>
-  <div class="map-history" id="history-item-2" data-date="2023-10-27">B - Gwanggyo</div>
-  <div class="map-history" id="history-item-3" data-date="2023-10-28">C - Seoul</div>
+
+<button id="toggleMapBtn">지도 보기</button>
+
+<div class="content-container">
+  <div class="map-container" id="mapContainer">
+    <div class="map" id="map"></div>
+  </div>
+
+  <div class="history-items">
+    <h3>여행 기록</h3>
+    <div class="map-history" id="history-item-1" data-date="2023-10-26" data-coords="127.1265,37.4139">
+      <h4>A - 성남</h4>
+      <span>날짜: 2023-10-26</span>
+    </div>
+    <div class="map-history" id="history-item-2" data-date="2023-10-27" data-coords="127.0543,37.2949">
+      <h4>B - 광교</h4>
+      <span>날짜: 2023-10-27</span>
+    </div>
+    <div class="map-history" id="history-item-3" data-date="2023-10-28" data-coords="126.9780,37.5665">
+      <h4>C - 서울</h4>
+      <span>날짜: 2023-10-28</span>
+    </div>
+    <div class="map-history" id="history-item-4" data-date="2023-10-28" data-coords="126.9780,37.5665">
+      <h4>C - 서울</h4>
+      <span>날짜: 2023-10-28</span>
+    </div>
+    <div class="map-history" id="history-item-5" data-date="2023-10-28" data-coords="126.9780,37.5665">
+      <h4>C - 서울</h4>
+      <span>날짜: 2023-10-28</span>
+    </div>
+
+    <div class="map-history" id="history-item-6" data-date="2023-10-28" data-coords="126.9780,37.5665">
+      <h4>C - 서울</h4>
+      <span>날짜: 2023-10-28</span>
+    </div>
+  </div>
 </div>
 
 <script src="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js"></script>
+<script src="core.js"></script>
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    const mapDiv = document.querySelector('.map');
+    const mapContainer = document.getElementById('mapContainer');
     const historyItems = document.querySelectorAll('.map-history');
+    const toggleMapBtn = document.getElementById('toggleMapBtn');
 
-    if (mapDiv) {
+    let map;
+
+    function initializeMap() {
       maplibregl.accessToken = 'YOUR_MAPLIBRE_API_KEY';
-
-      const map = new maplibregl.Map({
+      map = new maplibregl.Map({
         container: 'map',
         style: 'https://demotiles.maplibre.org/style.json',
         center: [127.0017, 37.5665],
         zoom: 10
       });
 
-      map.on('load', function () {
-        // --- Core logic to visualize a route with history points ---
-        function visualizeRoute(historyItems) {
-          // Clear existing layers and markers for a fresh visualization
-          if (map.getLayer('history-route-line')) {
-            map.removeLayer('history-route-line');
-          }
-          if (map.getSource('history-route')) {
-            map.removeSource('history-route');
-          }
-          document.querySelectorAll('.maplibregl-marker').forEach(marker => marker.remove());
-
-          // The pre-defined curved route
-          const curvedRouteCoordinates =[
-            [127.1265, 37.4139],  // 성남 출발
-            [127.1350, 37.4200],
-            [127.1500, 37.4050],
-            [127.1800, 37.4100],
-            [127.2050, 37.4000],
-            [127.2300, 37.4150],
-            [127.2450, 37.4200],
-            [127.2610, 37.4290]   // 광주 도착
-          ]
-
-          const bounds = new maplibregl.LngLatBounds();
-
-          // Add markers for each history item using coordinates from the curved route
-          historyItems.forEach((item, index) => {
-            // Use a simple index to pick points from the pre-defined route
-            const pointIndex = Math.floor(index / (historyItems.length - 1) * (curvedRouteCoordinates.length - 1));
-            const coordinates = curvedRouteCoordinates[pointIndex];
-
-            const date = item.dataset.date || 'Unknown Date';
-            const textContent = item.textContent;
-
-            bounds.extend(coordinates);
-
-            // Add a marker for each history item
-            new maplibregl.Marker()
-            .setLngLat(coordinates)
-            .setPopup(new maplibregl.Popup({ offset: 25 }).setText(`${textContent} (${date})`))
-            .addTo(map);
-          });
-
-          // --- Add the "History" Route Line ---
-          map.addSource('history-route', {
-            type: 'geojson',
-            data: {
-              type: 'Feature',
-              geometry: {
-                type: 'LineString',
-                coordinates: curvedRouteCoordinates // Use the pre-defined route
-              }
-            }
-          });
-
-          map.addLayer({
-            id: 'history-route-line',
-            type: 'line',
-            source: 'history-route',
-            layout: {
-              'line-join': 'round',
-              'line-cap': 'round'
-            },
-            paint: {
-              'line-color': '#3887be',
-              'line-width': 5,
-              'line-opacity': 0.7
-            }
-          });
-
-          // Fit the map to the bounds of all history locations
-          map.fitBounds(bounds, { padding: 50 });
-        }
-
+      map.on('load', function() {
         visualizeRoute(historyItems);
       });
-    } else {
-      console.error('Div with class "map" not found.');
     }
-  });
-</script>
+
+    function visualizeRoute(items) {
+      if (!map) return;
+
+      if (map.getLayer('history-route-line')) map.removeLayer('history-route-line');
+      if (map.getSource('history-route')) map.removeSource('history-route');
+      document.querySelectorAll('.maplibregl-marker').forEach(marker => marker.remove());
+
+      const curvedRouteCoordinates = [
+        [127.1265, 37.4139],
+        [127.1350, 37.4200],
+        [127.1500, 37.4050],
+        [127.1800, 37.4100],
+        [127.2050, 37.4000],
+        [127.2300, 37.4150],
+        [127.2450, 37.4200],
+        [127.2610, 37.4290]
+      ];
+
+      for(let i=0;i<items.length;i++){
+        const curvedRatio = (i + 1)/ (items.length  + 1);
+
+        console.log(curvedRatio)
+
+        const point30 =  getPointAtRatio(curvedRouteCoordinates, curvedRatio);
+        console.log(point30)
+        new maplibregl.Marker({ color: 'red' })
+        .setLngLat(point30)
+        .setPopup(new maplibregl.Popup().setText(`${curvedRatio}% 지점`))
+        .addTo(map);
+
+      }
+
+
+      map.addSource('history-route', { type: 'geojson', data: { type: 'Feature', geometry: { type: 'LineString', coordinates: curvedRouteCoordinates }}});
+      map.addLayer({
+        id: 'history-route-line', type: 'line', source: 'history-route',
+        layout: { 'line-join': 'round', 'line-cap': 'round' },
+        paint: { 'line-color': '#3887be', 'line-width': 5, 'line-opacity': 0.7 }
+      });
+
+    }
+
+    toggleMapBtn.addEventListener('click', function() {
+      if (mapContainer.style.display === 'none' || mapContainer.style.display === '') {
+        mapContainer.style.display = 'block';
+        toggleMapBtn.textContent = '목록 보기';
+
+        if (!map) {
+          initializeMap();
+        } else {
+          // Add a small delay to ensure the container is rendered before resizing
+          setTimeout(() => {
+            map.resize();
+            visualizeRoute(historyItems);
+          }, 100);
+        }
+      } else {
+        mapContainer.style.display = 'none';
+        toggleMapBtn.textContent = '지도 보기';
+      }
+    });
+  });</script>
 </body>
 </html>
