@@ -1,0 +1,39 @@
+{
+  "name": "geoport",
+  "version": "0.0.0",
+  "description": "경력과 경험을 지도 위에서 시각적으로 탐색할 수 있는 공간정보 기반 포트폴리오 헬퍼",
+  "author": {
+    "name": "su8y",
+    "email": "su8y@example.com"
+  },
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/su8y/Path-Portfolio#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/su8y/Path-Portfolio.git"
+  },
+  "bugs": {
+    "url": "https://github.com/su8y/Path-Portfolio/issues"
+  },
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "jest",
+    "build:babel": "npx babel src --out-dir dist",
+    "build:webpack": "npx webpack --mode production",
+    "build": "npm run build:babel && npm run build:webpack"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.28.3",
+    "@babel/core": "^7.28.3",
+    "@babel/preset-env": "^7.28.3",
+    "babel-jest": "^30.0.5",
+    "babel-loader": "^10.0.0",
+    "eslint": "^9.34.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "jest": "^30.0.5",
+    "webpack": "^5.101.3",
+    "webpack-cli": "^6.0.1"
+  }
+}
