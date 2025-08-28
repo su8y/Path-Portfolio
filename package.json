@@ -21,19 +21,26 @@
     "test": "jest",
     "build:babel": "npx babel src --out-dir dist",
     "build:webpack": "npx webpack --mode production",
-    "build": "npm run build:babel && npm run build:webpack"
+    "build": "npm run build:babel && npm run build:webpack",
+    "build:css": "tailwindcss --input ./example/input.css --output ./example/output.css --watch"
   },
   "devDependencies": {
     "@babel/cli": "^7.28.3",
     "@babel/core": "^7.28.3",
     "@babel/preset-env": "^7.28.3",
+    "autoprefixer": "^10.4.21",
     "babel-jest": "^30.0.5",
     "babel-loader": "^10.0.0",
     "eslint": "^9.34.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "jest": "^30.0.5",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.12",
     "webpack": "^5.101.3",
     "webpack-cli": "^6.0.1"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.12"
   }
 }

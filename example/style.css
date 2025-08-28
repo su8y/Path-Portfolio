@@ -1,0 +1,195 @@
+/* style.css */
+:root {
+    /* Light Mode Colors (default) */
+    --base-font-size: 14px;
+    --background-color: #f2f4f6;
+    --card-background-color: #ffffff;
+    --text-color: #1a1a1a;
+    --secondary-text-color: #6c757d;
+    --primary-color: #3182f6; /* A common blue used in Toss */
+    --border-color: #e0e0e0;
+}
+
+/* Dark Mode Colors */
+body.dark-mode {
+    --background-color: #1a1a1a;
+    --card-background-color: #2c2c2c;
+    --text-color: #e0e0e0;
+    --secondary-text-color: #b0b0b0;
+    --primary-color: #3182f6;
+    --border-color: #4a4a4a;
+}
+/* Styling for the font size select box */
+#fontSizeSelect {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    /* Box Model & Layout */
+    width: 100px;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px; /* Rounded corners */
+
+    /* Typography */
+    font-family: 'Pretendard', sans-serif;
+    font-size: 1rem;
+    color: var(--text-color);
+
+    /* Background & Icons */
+    background-color: var(--card-background-color);
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%236c757d" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 16px;
+
+    /* Transitions & Interactivity */
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+#fontSizeSelect:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(49, 130, 246, 0.2); /* Subtle glow on hover */
+}
+
+#fontSizeSelect:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(49, 130, 246, 0.3);
+}
+
+/* Dark Mode specific styles for the select box */
+body.dark-mode #fontSizeSelect {
+    background-color: var(--card-background-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23b0b0b0" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+}
+/* General Body and Font Styles */
+body {
+    font-family: 'Pretendard', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    transition: background-color 0.3s, color 0.3s;
+    font-size: var(--base-font-size); /* Base font size for scaling */
+}
+
+/* Font size adjustment classes */
+body.font-small {
+    font-size: 0.9rem;
+}
+
+body.font-large {
+    font-size: 1.1rem;
+}
+
+/* Main layout container */
+.resume-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 40px;
+    background-color: var(--card-background-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+}
+
+/* Header and controls */
+header {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1rem;
+}
+
+.controls {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    /* 추가적인 스타일링 (예: 배경색, 패딩, 그림자) */
+    background-color: var(--card-background-color);
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.controls button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-left: 8px;
+}
+
+/* Section styling */
+.section {
+    padding: 24px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.section:last-of-type {
+    border-bottom: none;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 20px;
+}
+
+/* Specific component styling */
+.header-section {
+    text-align: center;
+}
+
+.header-section h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+}
+
+.job-title {
+    font-size: 1.2rem;
+    color: var(--secondary-text-color);
+    margin-bottom: 16px;
+}
+
+.contact-info span {
+    margin: 0 5px;
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.work-item, .activity-item, .skill-group {
+    margin-bottom: 24px;
+}
+
+.work-item h3, .activity-item h3, .skill-group h3 {
+    font-size: 1.2rem;
+    color: var(--text-color);
+    margin-bottom: 8px;
+}
+
+ul {
+    padding-left: 20px;
+    margin-top: 5px;
+}
+
+.result {
+    font-style: italic;
+    color: var(--secondary-text-color);
+    margin-top: 10px;
+}
